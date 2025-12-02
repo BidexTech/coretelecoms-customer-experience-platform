@@ -40,7 +40,7 @@ def ingest_agents():
     # 5. Write to Parquet in S3
     write_dataframe_to_s3(
             df=df,
-            source="social_media"
+            source="agents"
             
         )
 

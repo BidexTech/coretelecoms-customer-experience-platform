@@ -1,24 +1,3 @@
-# import pandas as pd
-# import boto3
-# from s3_ingestion import write_dataframe_to_s3
-
-# S3_SOURCE_BUCKET = "core-telecoms-data-lake"
-# S3_SOURCE_KEY = "customers/customers_dataset.csv"
-
-# s3_client = boto3.client("s3")
-
-# def ingest_customers():
-#     obj = s3_client.get_object(Bucket=S3_SOURCE_BUCKET, Key=S3_SOURCE_KEY)
-#     df = pd.read_csv(obj['Body'])
-    
-#     # No cleaning, just standard column names
-#     df.columns = df.columns.str.lower().str.replace(" ", "_")
-    
-#     write_dataframe_to_s3(df, "customers")
-
-# if __name__ == "__main__":
-#     ingest_customers()
-
 
 import pandas as pd
 import boto3
@@ -61,6 +40,8 @@ def ingest_customers():
         # Add metadata
         df["source_file"] = key
         df["ingestion_timestamp"] = datetime.now()
+
+        print(df.head())
 
         # Generate output file name (same as raw CSV but parquet)
         parquet_name = key.split("/")[-1].replace(".csv", ".parquet")

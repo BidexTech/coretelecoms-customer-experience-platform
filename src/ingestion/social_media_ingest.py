@@ -50,6 +50,8 @@ def ingest_social_media():
         df["source_file"] = key
         df["ingestion_timestamp"] = datetime.now()
 
+        print(df.head())
+
         # print(df.head())
         # -------------------------------------------------
         # 4. Create parquet filename (same as input)

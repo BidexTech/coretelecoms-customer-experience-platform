@@ -5,8 +5,9 @@ locals {
 }
 
 
-resource "aws_s3_bucket" "spectrum_bucket" {
-  bucket = "coretelecoms-customers"
+resource "aws_s3_bucket" "datalake" {
+  # provider = aws.personal_acoount
+  bucket = "coretelecoms-datalake-raw"
 
   tags = merge(
     local.service,
@@ -16,7 +17,8 @@ resource "aws_s3_bucket" "spectrum_bucket" {
 
 
 resource "aws_s3_bucket_versioning" "versioning_example" {
-  bucket = aws_s3_bucket.spectrum_bucket.id
+  # provider = aws.personal_acoount
+  bucket = aws_s3_bucket.datalake.id
   versioning_configuration {
     status = "Enabled"
   }
@@ -24,7 +26,8 @@ resource "aws_s3_bucket_versioning" "versioning_example" {
 
 #  create folders in S3
 resource "aws_s3_object" "raw_folder" {
-  bucket = aws_s3_bucket.spectrum_bucket.bucket
+  # provider = aws.personal_acoount
+  bucket = aws_s3_bucket.datalake.bucket
   key    = "raw/"
   
 }

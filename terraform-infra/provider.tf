@@ -9,5 +9,7 @@ terraform {
 
 # Configure the AWS Provider
 provider "aws" {
+  # alias = "personal_acoount"
   region = "eu-north-1"
+  profile = "personal"
 }

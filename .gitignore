@@ -13,6 +13,8 @@ src/credentials/*
 *.tfstate.backup
 .terraform.lock.hcl
 
+# ignore progress notes
+PROGRESS_NOTES.md
 
 # Logs
 *.log

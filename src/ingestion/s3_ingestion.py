@@ -4,11 +4,12 @@ from datetime import datetime, timezone
 import io
 import os
 
-S3_BUCKET = os.environ.get("S3_BUCKET", "coretelecom-raw-data")
+S3_BUCKET = os.environ.get("S3_BUCKET", "coretelecoms-datalake-raw")
 RAW_FOLDER = "raw/"
 
-# AWS CLI credentials automatically used
-s3_client = boto3.client("s3")
+# AWS CLI credentials automatically used peronal profile
+session = boto3.Session(profile_name="personal")
+s3_client = session.client("s3")
 
 
 def write_dataframe_to_s3(df: pd.DataFrame, source: str, filename: str = None):

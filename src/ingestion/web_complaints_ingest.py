@@ -67,6 +67,8 @@ def ingest_website_complaints():
         df["source_file"] = table
         df["ingestion_timestamp"] = datetime.now()
 
+        print(df.head())
+
         # Parquet filename same as table
         parquet_name = f"{table}.parquet"
 

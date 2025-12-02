@@ -58,6 +58,8 @@ def ingest_call_center_logs():
         # Use timezone-aware UTC timestamp (recommended)
         df["ingestion_timestamp"] = datetime.now(timezone.utc)
 
+        print(df.head())
+
         # --------------------------------------------
         # 5. Send file to write_dataframe_to_s3 with filename override
         # --------------------------------------------

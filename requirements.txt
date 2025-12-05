@@ -1,0 +1,5 @@
+boto3==1.41.2
+gspread==6.2.1
+pandas==2.3.3
+protobuf==6.33.1
+SQLAlchemy==2.0.44

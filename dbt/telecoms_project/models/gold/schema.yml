@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: fct_all_complaints
+    columns:
+      - name: complaint_id
+        tests: [not_null]
+      - name: channel
+        tests: [not_null]
+      - name: customer_id
+        tests: [not_null]
+      - name: agent_id
+        tests: [not_null]
+
+  - name: dim_customers
+    columns:
+      - name: customer_id
+        tests: [unique, not_null]
+
+  - name: dim_agents
+    columns:
+      - name: agent_id
+        tests: [unique, not_null]
+
+  - name: agg_daily_complaints
+  - name: agg_agent_performance

@@ -2,10 +2,18 @@
 __pycache__/
 *.py[cod]
 venv/
-env/
+
 # Google Service Account Keys
 src/credentials/*
 *.json
+
+# IDE files
+.vscode/
+.idea/  
+  
+# dbt
+target/
+dbt_modules/
 
 # Terraform
 .terraform/

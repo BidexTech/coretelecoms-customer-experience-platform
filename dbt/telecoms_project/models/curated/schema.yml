@@ -1,0 +1,176 @@
+version: 2
+
+sources:
+  - name: core_telecoms_raw
+    database: CORE_TELECOMS
+    schema: RAW
+    tables:
+      - name: agents_raw
+      - name: call_center_logs_raw
+      - name: customers_raw
+      - name: social_media_raw
+      - name: website_complaints_raw
+models:
+  - name: agents
+    description: "Curated agents data transformed from RAW.agents_raw"
+    columns:
+      - name: id
+        tests:
+          - not_null
+          - unique
+
+      - name: name
+        tests:
+          - not_null
+
+      - name: email
+        tests: []
+
+      - name: ingestion_timestamp
+        tests:
+          - not_null
+
+      - name: load_timestamp
+        tests:
+          - not_null
+
+  - name: call_center_logs
+    description: "Curated call logs data transformed from RAW.call_center_logs_raw"
+    columns:
+      - name: record_id
+        tests:
+          - not_null
+          - unique
+
+      - name: agent_id
+        tests:
+          - not_null
+
+      - name: customer_id
+        tests:
+          - not_null
+
+      - name: call_id
+        tests:
+          - not_null
+          - unique
+
+      - name: resolution_status
+        tests: []
+
+      - name: ingestion_timestamp
+        tests:
+          - not_null
+
+      - name: load_timestamp
+        tests:
+          - not_null
+
+  - name: customers
+    description: "Curated customers dataset cleaned and standardized from customers_raw source."
+    columns:
+      - name: customer_id
+        description: "Unique customer identifier."
+        tests:
+          - not_null
+          - unique
+
+      - name: name
+        description: "Customer full name in proper case."
+        tests:
+          - not_null
+
+      - name: email
+        description: "Customer email address."
+        tests:
+          - not_null
+          - unique
+
+      - name: gender
+        description: "Customer gender."
+
+      - name: date_of_birth
+        description: "Date of birth of the customer."
+
+      - name: signup_date
+        description: "Date the customer signed up."
+        tests:
+          - not_null
+
+      - name: address
+        description: "Customer residential address."
+
+      - name: source_file
+        description: "Name of the source file the record was ingested from."
+
+      - name: ingestion_timestamp
+        description: "Raw ingestion timestamp from pipeline."
+
+      - name: load_timestamp
+        description: "Timestamp when record arrived in warehouse."
+
+
+  - name: social_media
+    description: "Curated social media complaints dataset cleaned and standardized from social_media_raw source."
+    columns:
+      - name: complaint_id
+        description: "Unique identifier for each social media complaint."
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_id
+        description: "Identifier of the customer lodging the complaint."
+        tests:
+          - not_null
+
+      - name: agent_id
+        description: "Agent assigned to resolve the social media complaint."
+        tests:
+          - not_null
+
+      - name: complaint_category
+        description: "Category describing the type of complaint."
+
+      - name: media_channel
+        description: "Social media platform used (e.g., Instagram, Twitter, Facebook)."
+        tests:
+          - not_null
+
+      - name: request_date
+        description: "Timestamp the social media request/complaint was created."
+
+      - name: resolution_date
+        description: "Timestamp the complaint was resolved."
+
+      - name: resolution_status
+        description: "Final status of the complaint."
+
+      - name: complaint_generation_date
+        description: "Date the complaint was generated in source."
+
+      - name: source_file
+        description: "Name of the source file the record originated from."
+
+      - name: ingestion_timestamp
+        description: "Raw ingestion timestamp from ingestion system."
+
+      - name: load_timestamp
+        description: "Timestamp when record was loaded into Snowflake."
+
+  - name: website_complaint_forms
+    description: "Cleaned website complaint submissions"
+    columns:
+      - name: request_id
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        tests:
+          - not_null
+      - name: agent_id
+        tests:
+          - not_null
+      - name: complaint_category
+        tests:
+          - not_null

@@ -10,9 +10,10 @@ src/credentials/*
 # IDE files
 .vscode/
 .idea/  
-  
+
 # dbt
 target/
+.dbt/
 dbt_modules/
 
 # Terraform

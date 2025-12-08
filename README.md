@@ -3,6 +3,7 @@
 ## Project Overview / Background
 
 The Core Telecoms Customer Experience Platform is designed to centralize, clean, and transform multi-channel customer complaints data to support business analytics and reporting. The project integrates call center logs, social media complaints, website complaint forms, customers and agent information into a unified data model. The Gold layer aggregates data for dashboards and analytics to monitor customer complaints trends and agent performance.
+
 This project implements a modern ELT pipeline orchestrated with Apache Airflow.
 Data from five independent sources is ingested into an S3 data lake (RAW zone), loaded into a Snowflake data warehouse as RAW tables, and transformed with dbt into CURATED and GOLD layers following the medallion architecture.
 ---

@@ -6,6 +6,7 @@ The Core Telecoms Customer Experience Platform is designed to centralize, clean,
 
 This project implements a modern ELT pipeline orchestrated with Apache Airflow.
 Data from five independent sources is ingested into an S3 data lake (RAW zone), loaded into a Snowflake data warehouse as RAW tables, and transformed with dbt into CURATED and GOLD layers following the medallion architecture.
+
 ---
 
 ## Project Structure

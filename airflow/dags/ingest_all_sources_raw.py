@@ -4,7 +4,7 @@ from pendulum import datetime
 from datetime import timedelta
 import sys
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
-
+from airflow.operators.bash import BashOperator
 # Add your src folder so Airflow can import ingestion functions
 sys.path.append("/opt/airflow/capstone/src")
 
@@ -92,5 +92,23 @@ with DAG(
         python_callable=run_agents_ingestion
     )
     
+
+
+
+run_dbt_curated = BashOperator(
+    task_id="dbt_run_curated",
+    bash_command="cd /opt/airflow/capstone && dbt run --models curated"
+)
+
+run_dbt_gold = BashOperator(
+    task_id="dbt_run_gold",
+    bash_command="cd /opt/airflow/capstone && dbt run --models gold"
+)
+
+run_dbt_tests = BashOperator(
+    task_id="dbt_test",
+    bash_command="cd /opt/airflow/capstone && dbt test"
+)
+
     agents_ingestion >> social_media_ingestion >> call_center_logs_ingestion >> web_complaints_ingestion >>  customers_ingestion
 

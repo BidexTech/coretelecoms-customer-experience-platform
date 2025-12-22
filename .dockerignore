@@ -1,0 +1,19 @@
+.git
+.gitignore
+__pycache__/
+.env
+.venv
+dbt/target
+dbt/logs
+node_modules
+*.log
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+
+# ignore progress notes
+PROGRESS_NOTES.md
+*.json

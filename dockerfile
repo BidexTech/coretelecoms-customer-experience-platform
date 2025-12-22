@@ -1,37 +1,50 @@
+# FROM apache/airflow:3.1.0
+
+# USER root
+
+# RUN apt-get update && apt-get install -y \
+#     git \
+#     curl \
+#     build-essential \
+#     && apt-get clean \
+#     && rm -rf /var/lib/apt/lists/*
+
+# USER airflow
+
+# WORKDIR /opt/airflow/capstone
+
+# COPY requirements.txt .
+
+# RUN pip install --upgrade pip \
+#  && pip install \
+#     -r requirements.txt
+
+# COPY . .
+
+# EXPOSE 8080
+
 FROM apache/airflow:3.1.0-python3.10
 
-# Switch to root to install system deps
 USER root
 
-# Install OS-level dependencies (lightweight & safe)
+# System deps (optional but safe)
 RUN apt-get update && apt-get install -y \
     git \
-    curl \
-    build-essential \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get clean
 
-# Switch back to airflow user
 USER airflow
+# Python deps
+COPY requirements.txt /requirements.txt
+RUN pip install --no-cache-dir -r /requirements.txt
 
-# Set working directory
-WORKDIR /opt/airflow
+# dbt
+RUN pip install --no-cache-dir dbt-snowflake==1.10.3
 
-# Copy requirements first (Docker layer caching)
-COPY requirements.txt /opt/airflow/requirements.txt
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project code into image
+# Copy Airflow artifacts
 COPY dags /opt/airflow/dags
 COPY src /opt/airflow/src
 COPY dbt /opt/airflow/dbt
-COPY snowflake /opt/airflow/snowflake
-COPY terraform-infra /opt/airflow/terraform-infra
 
-# Ensure permissions
-RUN chmod -R 755 /opt/airflow
-
-# Default Airflow entrypoint is already defined in base image
 

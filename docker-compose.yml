@@ -1,25 +1,35 @@
-x-airflow-common: &airflow-common
-  image: coretelecoms-airflow:latest
-  environment:
-    AIRFLOW__CORE__EXECUTOR: CeleryExecutor
-    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
-    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
-    AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
-    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
-    AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW__CORE__FERNET_KEY}
-    _AIRFLOW_WWW_USER_USERNAME: admin
-    _AIRFLOW_WWW_USER_PASSWORD: admin
-  volumes:
-    - ./dags:/opt/airflow/dags
-    - ./logs:/opt/airflow/logs
-    - ./plugins:/opt/airflow/plugins
-    - ./src:/opt/airflow/src
-    - ./dbt:/opt/airflow/dbt
+x-airflow-common:
+  &airflow-common
+  image: afeez/coretelecoms-platform:1.0.0
+  build: .
   user: "${AIRFLOW_UID:-50000}:0"
+  environment:
+    &airflow-common-env
+    AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'  # Samples turned off
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
+    AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
+    AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW__CORE__FERNET_KEY}
+    AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
+    # Project-specific config location
+    AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
+    # For Airflow 3.x API support
+    AIRFLOW__CORE__EXECUTION_API_SERVER_URL: 'http://airflow-apiserver:8080/execution/'
+
+  volumes:
+    - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
+    - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
+    - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
+    - ${AIRFLOW_PROJ_DIR:-.}/dbt:/opt/airflow/dbt
+    - ${AIRFLOW_PROJ_DIR:-.}/src:/opt/airflow/src
+
   depends_on:
-    postgres:
-      condition: service_healthy
+    &airflow-common-depends-on
     redis:
+      condition: service_healthy
+    postgres:
       condition: service_healthy
 
 services:
@@ -35,58 +45,99 @@ services:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 10s
       retries: 5
+    restart: always
 
   redis:
-    image: redis:7
+    image: redis:7.2-bookworm
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
-      retries: 5
+      timeout: 30s
+      retries: 50
+    restart: always
 
-  airflow-init:
+  airflow-apiserver:
     <<: *airflow-common
-    entrypoint: /bin/bash
-    command: >
-      -c "
-      airflow db migrate &&
-      airflow users create
-        --username admin
-        --password admin
-        --firstname Admin
-        --lastname User
-        --role Admin
-        --email admin@example.com
-      "
-    user: "0:0"
-
-  airflow-webserver:
-    <<: *airflow-common
-    command: webserver
+    command: api-server
     ports:
       - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/api/v2/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: always
     depends_on:
+      <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
 
   airflow-scheduler:
     <<: *airflow-common
     command: scheduler
+    restart: always
     depends_on:
+      <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
 
+  airflow-dag-processor:
+    <<: *airflow-common
+    command: dag-processor
+    restart: always
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-apiserver:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+        
   airflow-worker:
     <<: *airflow-common
     command: celery worker
+    environment:
+      <<: *airflow-common-env
+      DUMB_INIT_SETSID: "0"
+    restart: always
     depends_on:
+      <<: *airflow-common-depends-on
+      airflow-apiserver:
+        condition: service_healthy
       airflow-init:
         condition: service_completed_successfully
 
-  flower:
+  airflow-triggerer:
     <<: *airflow-common
-    command: celery flower
-    ports:
-      - "5555:5555"
+    command: triggerer
+    restart: always
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-init:
+    <<: *airflow-common
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        mkdir -p /opt/airflow/{logs,dags,plugins,config}
+        chown -R "${AIRFLOW_UID}:0" /opt/airflow/
+        exec /entrypoint airflow version
+    environment:
+      <<: *airflow-common-env
+      _AIRFLOW_DB_MIGRATE: 'true'
+      _AIRFLOW_WWW_USER_CREATE: 'true'
+      _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
+      _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
+    user: "0:0"
 
 volumes:
   postgres-db-volume:
+
+
+
+
+
+
+

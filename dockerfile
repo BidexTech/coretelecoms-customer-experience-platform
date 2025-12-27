@@ -1,50 +1,28 @@
-# FROM apache/airflow:3.1.0
-
-# USER root
-
-# RUN apt-get update && apt-get install -y \
-#     git \
-#     curl \
-#     build-essential \
-#     && apt-get clean \
-#     && rm -rf /var/lib/apt/lists/*
-
-# USER airflow
-
-# WORKDIR /opt/airflow/capstone
-
-# COPY requirements.txt .
-
-# RUN pip install --upgrade pip \
-#  && pip install \
-#     -r requirements.txt
-
-# COPY . .
-
-# EXPOSE 8080
-
 FROM apache/airflow:3.1.0-python3.10
 
 USER root
 
-# System deps (optional but safe)
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
-    && apt-get clean
+    build-essential \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 USER airflow
-# Python deps
-COPY requirements.txt /requirements.txt
-RUN pip install --no-cache-dir -r /requirements.txt
+#  Update PATH so the terminal can find dbt and python code in /opt/airflow/src
+ENV PATH="${PATH}:/home/airflow/.local/bin"
+ENV PYTHONPATH="${PYTHONPATH}:/opt/airflow/src"
 
-# dbt
-RUN pip install --no-cache-dir dbt-snowflake==1.10.3
+COPY --chown=airflow:0 requirements.txt /opt/airflow/requirements.txt
 
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r /opt/airflow/requirements.txt
+   
 
+WORKDIR /opt/airflow
 
-# Copy Airflow artifacts
-COPY dags /opt/airflow/dags
-COPY src /opt/airflow/src
-COPY dbt /opt/airflow/dbt
+COPY --chown=airflow:0 dags /opt/airflow/dags
+COPY --chown=airflow:0 src /opt/airflow/src
+COPY --chown=airflow:0 dbt /opt/airflow/dbt
 
-
+USER airflow

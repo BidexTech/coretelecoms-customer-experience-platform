@@ -1,0 +1,35 @@
+name: Data Pipeline CI
+
+on:
+  push:
+    branches: [ dev ]        # Run tests whenever you push to dev
+  pull_request:
+    branches: [ main ]      # Run tests when you try to merge dev into main
+
+jobs:
+  quality_checks:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Linting Tools
+        run: |
+          pip install flake8 sqlfluff
+
+      - name: Python Linting (DAG Check)
+        run: |
+          # Checks for syntax errors in your Airflow DAGs
+          flake8 dags/ --count --select=E9,F63,F7,F82 --show-source --statistics
+
+      - name: SQL Linting (dbt Check)
+        run: |
+          # Ensures your SQL follows clean coding standards
+          # This is huge for recruiters!
+          sqlfluff lint dbt/models/ --dialect snowflake

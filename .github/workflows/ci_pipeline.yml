@@ -30,6 +30,4 @@ jobs:
 
       - name: SQL Linting (dbt Check)
         run: |
-          # Ensures your SQL follows clean coding standards
-          # This is huge for recruiters!
-          sqlfluff lint dbt/models/ --dialect snowflake
+          sqlfluff lint dbt/telecoms_project/models/ --dialect snowflake

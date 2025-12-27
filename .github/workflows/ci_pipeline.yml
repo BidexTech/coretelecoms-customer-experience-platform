@@ -2,9 +2,9 @@ name: Data Pipeline CI
 
 on:
   push:
-    branches: [ dev ]        # Run tests whenever you push to dev
+    branches: [ dev ]        
   pull_request:
-    branches: [ main ]      # Run tests when you try to merge dev into main
+    branches: [ main ]     
 
 jobs:
   quality_checks:

@@ -1,0 +1,33 @@
+# Git
+.git
+.gitignore
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# dbt - Very important for size!
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+
+# Infrastructure & Secrets
+terraform-infra/
+.terraform/
+.env
+*.pem
+*.key
+src/credentials/*
+
+# OS/IDEs
+.vscode/
+.idea/
+.DS_Store
+
+# ignore progress notes
+PROGRESS_NOTES.md
+*.json

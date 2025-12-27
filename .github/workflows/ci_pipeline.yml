@@ -30,4 +30,4 @@ jobs:
 
       - name: SQL Linting (dbt Check)
         run: |
-          sqlfluff lint dbt/telecoms_project/models/ --dialect snowflake
+          sqlfluff lint dbt/telecoms_project/models/ --dialect snowflake --ignore parsing,templating

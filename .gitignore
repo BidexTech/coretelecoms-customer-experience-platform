@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 venv/
+.env
 
 # Google Service Account Keys
 src/credentials/*

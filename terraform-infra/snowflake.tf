@@ -33,7 +33,7 @@ data "aws_iam_policy_document" "snowflake_assume_role" {
     effect = "Allow"
 
     principals {
-      type        = "AWS"
+      type = "AWS"
       identifiers = [
         "arn:aws:iam::714551764970:user/96u71000-s"
       ]
@@ -52,7 +52,7 @@ data "aws_iam_policy_document" "snowflake_assume_role" {
 resource "aws_iam_role" "snowflake_role" {
   name               = "SnowflakeReadS3Role"
   assume_role_policy = data.aws_iam_policy_document.snowflake_assume_role.json
-  tags = merge(local.generic_tag, local.snowflake_tags)
+  tags               = merge(local.generic_tag, local.snowflake_tags)
 }
 
 #  Attach the S3 read policy to the role

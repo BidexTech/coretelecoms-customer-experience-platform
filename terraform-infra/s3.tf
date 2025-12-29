@@ -29,5 +29,5 @@ resource "aws_s3_object" "raw_folder" {
   # provider = aws.personal_acoount
   bucket = aws_s3_bucket.datalake.bucket
   key    = "raw/"
-  
+
 }

@@ -13,40 +13,44 @@ Data from five independent sources is ingested into an S3 data lake (RAW zone), 
 
 ```
 coretelecoms-customer-experience-platform/
+├── .github
+├── .dockerignore
 ├── README.md
 ├── .gitignore
+├── .env
+├── Dockerfile
+├── docker-compose.yaml
 ├── requirements.txt
 │
-├── dags/                             # Airflow Orchestration
-│   ├── __init__.py
-│   ├── ingest_all_sources_raw.py
+├── dags/                             
+│   ├── ingestion_and_transform_dag.py
 │  
 │
-├── dbt/                              # dbt Project
+├── dbt/telecoms_project                             
 │   ├── dbt_project.yml
-│   ├── packages.yml
+│   ├── profiles.yml
 │   ├── models/
 │   │   ├── raw/
 │   │   ├── curated/
 │   │   └── gold/
 │   ├── seeds/
 │   ├── snapshots/
-│   └── target/                       # Added to .gitignore
+│   └── target/                       
 │
-├── src/                   # Python ingestion code
+├── src/                   
 │   ├── credentials/
 │   ├── ingestion/
 │       ├── agents_ingest.py
 │       ├── cutomers_ingest.py
-│       ├──social_medial_ingest.py
-│       ├──call_center_ingest.py
-│       ├─  web_comaplaints_ingest.py
+│       ├── social_medial_ingest.py
+│       ├── call_center_ingest.py
+│       ├── web_comaplaints_ingest.py
 │       └── s3_ingestion.py
 │   
 │
 ├── snowflake/
 │   └── data_integ_load_command/
-│       ├── copy.sql
+│       ├── copy_procedure.sql
 │       ├── data_integration.sql
 │       ├── database.sql
 │       ├── query_data.sql
@@ -54,18 +58,13 @@ coretelecoms-customer-experience-platform/
 │       ├── table.sql
 │       └── warehouse.sql
 │
-├── terraform-infra/                  # Terraform Infrastructure as Code
-│   ├── backend.tf
-│   ├── locals.tf
-│   ├── provider.tf
-│   ├── s3.tf
-│   └── snowflake.tf
-│
-├── airflow/                          # OPTIONAL: Local Airflow Compose Setup
-│   ├── docker-compose.yaml
-│   ├── Dockerfile
-│   └── requirements.txt
-│
+├── terraform-infra/                 
+    ├── backend.tf
+    ├── locals.tf
+    ├── provider.tf
+    ├── s3.tf
+    └── snowflake.tf
+
 
 ```
 

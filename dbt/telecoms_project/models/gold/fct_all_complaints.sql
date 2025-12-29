@@ -65,13 +65,14 @@ joined AS (
         a.experience AS agent_experience,
         a.state AS agent_state,
         -- Derived metrics
-        CASE WHEN resolution_date IS NOT NULL THEN TRUE ELSE FALSE END AS resolved_flag,
-        DATEDIFF('hour', request_date, resolution_date) AS resolution_hours,
-        DATE_TRUNC('day', request_date) AS request_day
-    FROM unioned u
-    LEFT JOIN {{ ref('dim_customers') }} c
+        coalesce (resolution_date IS NOT NULL, FALSE)
+            AS resolved_flag,
+        datediff('hour', request_date, resolution_date) AS resolution_hours,
+        date_trunc('day', request_date) AS request_day
+    FROM unioned AS u
+    LEFT JOIN {{ ref('dim_customers') }} AS c
         ON u.customer_id = c.customer_id
-    LEFT JOIN {{ ref('agents') }} a
+    LEFT JOIN {{ ref('agents') }} AS a
         ON u.agent_id = a.id
 )
 

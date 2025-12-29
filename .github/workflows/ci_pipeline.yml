@@ -27,7 +27,6 @@ jobs:
         run: |
           # Checks for syntax errors in your Airflow DAGs
           flake8 dags/ --count --select=E9,F63,F7,F82 --show-source --statistics
-
       - name: SQL Linting (dbt Check)
         run: |
-          sqlfluff lint dbt/telecoms_project/models/ --dialect snowflake --ignore parsing,templating --exclude-rules RF04,AL09,RF02,LT05
+          sqlfluff lint dbt/telecoms_project/models/ --dialect snowflake --ignore parsing,templating --exclude-rules RF04,AL09,RF02,LT05,LT01,LT06

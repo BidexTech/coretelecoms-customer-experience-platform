@@ -11,5 +11,3 @@ FROM {{ ref('fct_all_complaints') }}
 GROUP BY
     request_day,
     channel
-
-

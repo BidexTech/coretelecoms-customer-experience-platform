@@ -1,17 +1,17 @@
-
 {{ config(materialized='table') }}
 
 WITH base AS (
     SELECT
         customer_id,
-        INITCAP(name) AS customer_name,
-        LOWER(email) AS email,
         gender,
         address,
         date_of_birth,
         signup_date,
+        INITCAP(name) AS customer_name,
+        LOWER(email) AS email,
         -- Calculate derived fields
-        DATE_PART('year', CURRENT_DATE) - DATE_PART('year', date_of_birth) AS age,
+        DATE_PART('year', CURRENT_DATE)
+        - DATE_PART('year', date_of_birth) AS age,
         DATEDIFF('day', signup_date, CURRENT_DATE) AS days_since_signup
     FROM {{ ref('customers') }}
 ),
@@ -57,4 +57,3 @@ segmented AS (
 )
 
 SELECT * FROM segmented
-

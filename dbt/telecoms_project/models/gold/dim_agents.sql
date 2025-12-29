@@ -2,7 +2,7 @@
 
 SELECT
     id AS agent_id,
-    INITCAP(name) AS agent_name,
     experience,
-    state
+    state,
+    INITCAP(name) AS agent_name
 FROM {{ ref('agents') }}

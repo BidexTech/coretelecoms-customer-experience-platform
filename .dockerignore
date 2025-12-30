@@ -11,14 +11,19 @@ __pycache__/
 *.pyd
 
 # dbt - Very important for size!
-dbt/target/
-dbt/dbt_packages/
-dbt/logs/
+dbt/telecoms_project/target/
+dbt/telecoms_project/dbt_packages/
+dbt/telecoms_project/logs/
+
+# snowflake
+snowflake/ddl_setup_scripts/
+
 
 # Infrastructure & Secrets
 terraform-infra/
 .terraform/
 .env
+.env.*
 *.pem
 *.key
 src/credentials/*
@@ -28,6 +33,9 @@ src/credentials/*
 .idea/
 .DS_Store
 
-# ignore progress notes
+# ignore progress notes & logs
 PROGRESS_NOTES.md
 *.json
+logs/
+*.log
+

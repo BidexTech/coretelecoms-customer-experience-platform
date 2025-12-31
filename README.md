@@ -1,6 +1,9 @@
-# Core Telecoms Customer Experience Platform
+# 📡 CoreTelecoms Customer Experience Platform
 
 ![CI/CD Pipeline](https://github.com/BidexTech/coretelecoms-customer-experience-platform/actions/workflows/ci_pipeline.yml/badge.svg)
+![Airflow](https://img.shields.io/badge/Apache%20Airflow-3.1.0-017CEE?style=flat&logo=apache-airflow&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=flat&logo=docker&logoColor=white)
+![Snowflake](https://img.shields.io/badge/Snowflake-Data%20Warehouse-29B5E8?style=flat&logo=snowflake&logoColor=white)
 
 ## Project Overview / Background
 
@@ -12,6 +15,13 @@ Data from five independent sources is ingested into an S3 data lake (RAW zone), 
 ---
 
 ## Project Structure
+| Folder             | Purpose                                      |
+| ------------------ | -------------------------------------------- |
+| `dags/`            | Airflow ingestion & dbt orchestration DAGs   |
+| `dbt/`             | Modular SQL models (Staging, Marts)          |
+| `terraform-infra/` | AWS & Snowflake infrastructure as code       |
+| `snowflake/`       | Initial Snowflake DDL bootstrapping scripts  |
+| `src/`             | Custom Python ingestion and enrichment logic |
 
 ```
 coretelecoms-customer-experience-platform/
@@ -115,77 +125,74 @@ coretelecoms-customer-experience-platform/
 
 ## Choice of Tools and Technology
 
-* **Python**: Data ingestion, transformation helpers.
-* **dbt**: Transformations, testing, and documentation.
-* **Snowflake**: Cloud data warehouse for storage and analytics.
-* **Airflow**: Orchestration of ingestion and transformation pipelines.
-* **AWS S3**: Raw and intermediate storage.
-* **GitHub**: Version control and collaboration.
+This project utilizes a Modern Data Stack (MDS) architecture, ensuring scalability, reliability, and portability:
+
+* **Infrastructure:** Terraform (AWS S3 & Snowflake policy document and role setup).
+* **Orchestration:** Apache Airflow 3.1.0 (Running in Docker with CeleryExecutor).
+* **Transformation:** dbt (Data Build Tool) for modular SQL modeling.
+* **Data Warehouse:** Snowflake (Multi-cluster compute).
+* **CI/CD:** GitHub Actions (Linting, Validation, and Automated Docker Builds).
+* **Monitoring:** Slack & SMTP integration for pipeline health alerts.
 
 ---
 
-## Setup Instructions
+## ⚙️ CI/CD Pipeline Logic
 
-### 1. Clone the Repository
+> **Broken code never hits production.**
+
+## Continuous Integration (CI)
+
+Every push to the `dev` branch triggers automated quality checks:
+
+- **flake8** — Python linting  
+- **sqlfluff** — SQL linting  
+- **terraform validate** — Infrastructure configuration validation  
+
+---
+
+## Continuous Deployment (CD)
+
+Merges to the `main` branch trigger a GitHub Actions workflow that:
+
+- Builds a new production Docker image  
+- Pushes the image to Docker Hub:
 
 ```bash
-git clone <repository_url>
+bidextech/coretelecoms-platform:1.0.0
+```
+##  Quick Start: Local Deployment
+
+### 1. Prerequisites
+* [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+* A Snowflake Account
+* AWS IAM Credentials
+* DBT-core
+
+### 2. Setup
+Clone the repository and prepare your environment:
+```bash
+git clone https://github.com/BidexTech/coretelecoms-customer-experience-platform.git
 cd coretelecoms-customer-experience-platform
+cp .env.example .env  # Update with your Snowflake credentials for dbt communication
+
+# Build and start all services:
+
+docker-compose up -d --build
 ```
+| Tool           | URL                                            | Credentials                                  |
+| -------------- | ---------------------------------------------- | -------------------------------------------- |
+| **Airflow UI** | [http://localhost:8080](http://localhost:8080) | `admin / admin`                              |
+| **dbt Docs**   | Run inside container: `dbt docs generate`      | Generates data lineage & model documentation |
 
-### 2. Set up Python Environment
+### 3. Add connection in Airflow UI
 
-```bash
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate     # Windows
-pip install -r requirements.txt
-```
-
-### 3. Configure dbt
-
-* Update `profiles.yml` with Snowflake credentials.
-* Ensure `CURATED` and `GOLD` schemas exist and your ETL role has privileges.
-* Example materialization in `dbt_project.yml`:
-
-```yaml
-models:
-  telecoms_project:
-    curated:
-      +schema: CURATED
-      +materialized: table
-    gold:
-      +schema: GOLD
-      +materialized: table
-```
-
-### 4. Run dbt Locally
-
-```bash
-dbt deps
-dbt clean
-dbt run --models curated
-dbt run --models gold
-dbt test
-dbt docs generate
-dbt docs serve
-```
-
-### 5. Airflow Orchestration
-
-* Place DAGs in `dags/` folder.
-* Example DAG tasks:
-
-  * Ingest RAW data → S3 → Snowflake
-  * Run dbt CURATED models
-  * Run dbt GOLD models
-  * Run dbt tests
-* Use `PythonOperator` for ingestion and `BashOperator` for dbt commands.
-
----
+| Connection ID    | Type      | Description                                             |
+| ---------------- | --------- | ------------------------------------------------------- |
+| `aws_default`    | AWS       | Pulls raw CSV/JSON logs from S3 landing zones           |
+| `snowflake_conn` | Snowflake | Executes dbt models and performs data loading           |
+| `slack_conn`     | HTTP      | Sends pipeline failure/success alerts to `#data-alerts` |
+| `smtp_conn`   | Email     | Sends daily performance PDF reports to business leads   |
 
 ## Notes
 
-* Keep large files, compiled dbt artifacts (`target/`, `logs/`) out of Git using `.gitignore`.
-* Schema macro used to dynamically switch between CURATED and GOLD layers.
 * The platform is designed for easy extension for additional data sources and analytical metrics.

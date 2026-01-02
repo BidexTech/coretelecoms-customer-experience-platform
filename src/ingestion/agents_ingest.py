@@ -22,10 +22,7 @@ def ingest_agents(s3_client_write=None):
 
     try:
         #  Authenticate using JSON key
-        creds_path = os.path.join(
-            os.path.dirname(__file__),
-            "../credentials/gsheet_ingestor.json"
-        )
+        creds_path = "/opt/airflow/credentials/gsheet_ingestor.json"
 
         if not os.path.exists(creds_path):
             raise FileNotFoundError(f"Google Sheets credentials file not found: {creds_path}")

@@ -41,54 +41,13 @@ coretelecoms-customer-experience-platform/
 ```
 
 ---
+## Architecture Design
 
-## Architecture Diagram
+<p align="center">
+  <img src="assets/architecture.png" alt="CoreTelecoms Pipeline Architecture" width="850">
+</p>
 
-```
-            +---------------------------------------+
-            |          SOURCE SYSTEMS               |
-            | (Call Center, Social, Web, CRM, GS)   |
-            +-------------------+-------------------+
-                                |
-                   (Airflow Parallel Ingestion)
-                                v
-            +-------------------+-------------------+
-            |        AWS S3 LANDING ZONE            |
-            |           (Raw Parquet)               |
-            +-------------------+-------------------+
-                                |
-                  (Snowflake Copy Procedures)
-                                v
-            +-------------------+-------------------+
-            |       SNOWFLAKE RAW LAYER             |
-            |      (Landings Raw Parquet )          |
-            +-------------------+-------------------+
-                                |
-                    (dbt Transformation)
-                                v
-            +-------------------+-------------------+
-            |     SNOWFLAKE CURATED LAYER           |
-            |   (Deduplicated / Cleansed Data)      |
-            +-------------------+-------------------+
-                                |
-                    (dbt Transformation)
-                                v
-            +-------------------+-------------------+
-            |       SNOWFLAKE GOLD LAYER            |
-            |        (Business Logic )              |
-            +-------------------+-------------------+
-                                |
-             +------------------+------------------+
-             |                                     |
-             v                                     v
-    +-----------------+                  +-------------------+
-    |  BI DASHBOARDS  |                  |  SLACK & EMAIL    |
-    | (PowerBI/Sigma) |                  | (Pipeline Alerts) |
-    +-----------------+                  +-------------------+
-
-    [ Infrastructure: Terraform | Orchestration: Airflow 3.1.5 ]
-```
-
+> **Architecture Overview:** This diagram illustrates the end-to-end flow from multi-source ingestion (S3, GSheets, Postgres) to the Snowflake Medallion layers, all orchestrated via Airflow 3.1.5.
 ---
 
 ## ⛓️ Pipeline Workflow Logic
@@ -158,9 +117,6 @@ Merges to the `main` branch trigger a GitHub Actions workflow that:
 ```bash
 bidextech/coretelecoms-platform:1.0.0
 ```
-
-##  Technical Architecture
-![Architecture Diagram](./assets/architecture.PNG)
 
 ##  Orchestration & Transformation
 ### 1. Airflow Workflow

@@ -17,7 +17,8 @@ dbt/telecoms_project/logs/
 
 # snowflake
 snowflake/ddl_setup_scripts/
-
+assets/
+*.png
 
 # Infrastructure & Secrets
 terraform-infra/
@@ -26,7 +27,8 @@ terraform-infra/
 .env.*
 *.pem
 *.key
-src/credentials/*
+credentials/
+*.json
 
 # OS/IDEs
 .vscode/
@@ -37,5 +39,12 @@ src/credentials/*
 PROGRESS_NOTES.md
 *.json
 logs/
-*.log
+
+# Prevents your local test logs/DB from bloating the image
+logs/
+plugins/
+airflow.db
+airflow.cfg
+airflow-*.err
+airflow-*.log
 

@@ -3,10 +3,12 @@ __pycache__/
 *.py[cod]
 venv/
 .env
+.env.*
 
 # Google Service Account Keys
-src/credentials/*
+credentials/*
 *.json
+!credentials/.gitkeep
 
 # IDE files
 .vscode/

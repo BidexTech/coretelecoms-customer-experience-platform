@@ -44,7 +44,7 @@ coretelecoms-customer-experience-platform/
 ## Architecture Design
 
 <p align="center">
-  <img src="assets/architecture.png" alt="CoreTelecoms Pipeline Architecture" width="850">
+  <img src="assets/architecture.PNG" alt="CoreTelecoms Pipeline Architecture" width="850">
 </p>
 
 > **Architecture Overview:** This diagram illustrates the end-to-end flow from multi-source ingestion (S3, GSheets, Postgres) to the Snowflake Medallion layers, all orchestrated via Airflow 3.1.5.
